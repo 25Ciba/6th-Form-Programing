@@ -49,10 +49,10 @@ class Board:
         return self.get_square_from_pos(pos).occupying_piece
 
         def setup_board(self):
-        for y, row in enumerate(self.config):
-            for x, piece in enumerate(row):
-                if piece != '':
-                    square = self.get_square_from_pos((x, y))
+            for y, row in enumerate(self.config):
+                for x, piece in enumerate(row):
+                    if piece != '':
+                        square = self.get_square_from_pos((x, y))
                     # looking inside contents, what piece does it have
                     if piece[1] == 'R':
                         square.occupying_piece = Rook(

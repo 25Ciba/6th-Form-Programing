@@ -189,10 +189,28 @@ def pickDeck(currentPlayer):
     if headPointer == len(deck):
         headPointer = 0
 
+#def missAGo(currentPlayer):
+    #position = 
+    #if position = 
+        
 
-def playerMove():
+#def checkanimal():
+
+
+def playerMove(currentPlayer):
     dice1 = random.randint(1, 6)
     dice2 = random.randint(1, 6)
+    position = currentPlayer.getPosition()+ dice1 + dice2
+    if dice1 == dice2:
+        pickDeck(currentPlayer)
+    if position > 25:
+        currentPlayer.setMoney(currentPlayer.getMoney()) + 500
+        position = position - 26
+    if position == 13:
+        missAGo(currentPlayer)
+    elif position != 0:
+        checkAnimal(currentPlayer)
+    return position
   
 # complete this function based upon the exam question you completed, you may need to alter the function name and paramters. 
 
