@@ -47,8 +47,8 @@ class Animal():
         return self.name
     
     ''' These need thinking about'''
-    def upgrade(player):
-        return None
+    def upgrade(self, player):
+        return None 
 
      # LOs need to be checked against player 
     def getAmountToCharge(self):
@@ -194,7 +194,11 @@ def pickDeck(currentPlayer):
     #if position = 
         
 
-#def checkanimal():
+def checkanimal(curentPlayer):
+    animal = board[currentPlayer].getboardPosition()
+    if animal.getOwned == 'free':
+        print("Would you like to buy a" + str(animal.getName()) + "for " + str(animal.getCost) + "?")
+        input("Please Type: 'yes' or 'no':")
 
 
 def playerMove(currentPlayer):
@@ -244,7 +248,7 @@ def show_menu():
     print("1. View animals")
     print("2. Buy animal")
     print("3. Upgrade animal")
-    print("4. End turn")
+    print("4. End turn") 
     print("5. Veiw board")
     print("6. Quit Game")
 
@@ -289,4 +293,5 @@ while running:
     choice = input("Enter your choice: ")
     print("               ")
     print("===============")
+    checkanimal(currentPlayer)
     running = menu_choice(choice)
