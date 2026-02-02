@@ -1,20 +1,23 @@
 class Player():
     def __init__(self, thePlayerID):
         self.playerID = thePlayerID
-        self.boardPosition = 0
+        self.position = 0
         self.money = 2000
+        self.skipTurn = False
+        self.rollsThisTurn = 0
     
     def getPosition(self):
-        return self.boardPosition
+        return self.position
     
     def setPosition(self, position):
-        self.boardPosition = position
+        self.position = position
 
     def getMoney(self):
         return self.money
     
     def setMoney(self, amount):
         self.money = amount
+
 
 class Animal():
     def __init__(self, theName, theCost, 
@@ -46,13 +49,16 @@ class Animal():
     def getName(self):
         return self.name
     
-    ''' These need thinking about'''
-    def upgrade(self, player):
-        return None 
+    def upgrade(self): 
+        if self.currentLevel < 3: 
+            self.currentLevel += 1
+        else:
+            print(self.name, "is already at max level.")
 
-     # LOs need to be checked against player 
     def getAmountToCharge(self):
-        return None
+        levels = [self.L0, self.L1, self.L2, self.L3]
+        return levels[self.currentLevel]
+
     
 class Card():
     # private textToDisplay String
@@ -68,26 +74,15 @@ class Card():
     
     def getAmount(self):
         return self.amount
-
-'''
-- then complete class methods for an animal
-- then consider how the menu system could be used to complete the game itself. 
-
-'''
-
+    
+##########
+##########
+##########
 
 import random
-###########################################################
 
-# MAIN GAME # 
-
-# setup the board
-
-board = [None]*26 # setup an empty board of type None
-
-# manually change each value so that the board is now of type Animal with 2 strings for the empty squares. 
-
-board[0] = Animal("-START-", None, None, None, None, None, None, None, None)
+board = [None]*26 
+board[0] = Animal("START", 0, 0, 0, 0, 0, "start.bmp", 0, "free")
 board[1] = Animal("mouse", 600, 5, 25, 50, 100, "mouse.bmp", 1, "free")
 board[2] = Animal("rabbit", 800, 8, 40, 80, 160, "rabbit.bmp", 2, "free")
 board[3] = Animal("hedgehog", 900, 9, 45, 90, 180, "hedgehog.bmp", 3, "free")
@@ -100,7 +95,7 @@ board[9] = Animal("boar", 2000, 20, 100, 200, 400, "boar.bmp", 9, "free")
 board[10] = Animal("wolf", 2200, 22, 110, 220, 440, "wolf.bmp", 10, "free")
 board[11] = Animal("lynx", 2400, 24, 120, 240, 480, "lynx.bmp", 11, "free")
 board[12] = Animal("bear", 2600, 26, 130, 260, 520, "bear.bmp", 12, "free")
-board[13] = Animal("-SPECIAL-", None, None, None, None, None, None, None, None)
+board[13] = Animal("SPECIAL", 0, 0, 0, 0, 0, "special.bmp", 13, "free")
 board[14] = Animal("penguin", 1800, 18, 90, 180, 360, "penguin.bmp", 14, "free")
 board[15] = Animal("seal", 2000, 20, 100, 200, 400, "seal.bmp", 15, "free")
 board[16] = Animal("dolphin", 2400, 24, 120, 240, 480, "dolphin.bmp", 16, "free")
@@ -114,23 +109,8 @@ board[23] = Animal("hippo", 3400, 34, 170, 340, 680, "hippo.bmp", 23, "free")
 board[24] = Animal("lion", 3600, 36, 180, 360, 720, "lion.bmp", 24, "free")
 board[25] = Animal("gorilla", 3800, 38, 190, 380, 760, "gorilla.bmp", 25, "free")
 
-# setup up to 4 players (this might need adapting if the game doesn't always have 4 players)
+###
 
-def create_players():
-    num = int(input("How many players? (2-4): "))
-    while not(2 <= num <= 4):
-        print("Please enter 2, 3, or 4.")
-        num = int(input("How many players? (2-4): "))
-
-    players = [None]*num
-    for i in range(num):
-        players[i] = Player("P"+str(i+1))
-
-    return players
-
-players = create_players()
-
-# setup the deck - this assumes they are always in this order, in we might shuffle - randomise. 
 deck = [
     Card("WIN: You have won the zoo lottery", 1000000),
     Card("FINE: You are double parked while visiting the zoo", -200),
@@ -171,127 +151,184 @@ deck = [
     Card("WIN: Endangered species funding approved", 750),
     Card("FINE: Insurance excess payment required", -300)
 ]
-
-# this variable will point to the first item in queue of cards in the deck
 headPointer = 0
 
-####################################################################################
-# functions to allow the game to be played
-####################################################################################
+#
+
+def viewAllAnimals(theBoard):
+    for i in range(len(theBoard)): 
+        print(str(i) + ": " + theBoard[i].getName())
+
+#
+
+def create_players():
+    num = int(input("How many players? (2-4): "))
+    while num < 2 or num > 4:
+        print("Please enter 2, 3, or 4.")
+        num = int(input("How many players? (2-4): "))
+    players = [None]*num
+    for i in range(num):
+        players[i] = Player("P"+str(i+1))
+    return players
+players = create_players()
+
+#
 
 def pickDeck(currentPlayer):
+    global headPointer
     
     print(deck[headPointer].getTextToDisplay())
     playersTotal = currentPlayer.getMoney() + deck[headPointer].getAmount()
     currentPlayer.setMoney(playersTotal)
-    
     headPointer=headPointer+1
     if headPointer == len(deck):
         headPointer = 0
 
-#def missAGo(currentPlayer):
-    #position = 
-    #if position = 
-        
+#
 
-def checkanimal(currentPlayer):
-    animal = board[currentPlayer].getboardPosition()
-    if animal.getOwned == 'free':
-        print("Would you like to buy a" + str(animal.getName()) + "for " + str(animal.getCost) + "?")
-        input("Please Type: 'yes' or 'no':")
+def checkAnimal(player):
+    pos = player.getPosition()
+    space = board[pos]
+    if space.getOwned() == "free" and space.getCost() > 0:
+        ownershipQ = input("Would you like to buy " + space.getName() + " for " + str(space.getCost()) + " ? (Y/N): ").upper()
+        if ownershipQ == "Y":
+            purchase(player, space)
+            return
+    if space.getOwned() == player:
+        if space.getCurrentLevel() < 3:
+            print("Type Y or N")
+            upgradingQ = input("Would you like to upgrade", space.getName(), "for", space.getCost(), "?").upper()
+            if upgradingQ == "Y":
+                space.upgrade()
+            return
+        if space.getOwned() != "free":
+            chargeStay(player, space)
 
+#
+
+def purchase(player, animal):
+    balance = player.getMoney()
+    costOfBuying = animal.getCost()
+    if balance >= costOfBuying:
+        player.setMoney(balance - costOfBuying)
+        animal.setOwned(player)
+        print("You now own", animal.getName())
+    else: 
+        print("You do not have enough money to purchase this animal.")
+
+#
+
+def chargeStay(player, animal):
+    fine = animal.getAmountToCharge()
+    player.setMoney(player.getMoney - fine)
+
+    owner = animal.getOwned()
+    owner.setMoney(owner.getMoney() + fine)
+
+    print(player.playerID, "paid", fine, "to", owner.playerID)
+
+#
 
 def playerMove(currentPlayer):
     dice1 = random.randint(1, 6)
     dice2 = random.randint(1, 6)
-    position = currentPlayer.getPosition()+ dice1 + dice2
+    print("You rolled:", dice1, "and", dice2)
+    newPos = currentPlayer.getPosition() + dice1 + dice2
     if dice1 == dice2:
+        print("You rolled a double! Drawing a card...")
         pickDeck(currentPlayer)
-    if position > 25:
-        currentPlayer.setMoney(currentPlayer.getMoney()) + 500
-        position = position - 26
-    if position == 13:
-        missAGo(currentPlayer)
-    elif position != 0:
+    if newPos > 25:
+        newPos -= 26
+        currentPlayer.setMoney(currentPlayer.getMoney() + 500)
+        print("You passed START and collected 500!")
+    currentPlayer.setPosition(newPos)
+    print("You're now on", board[newPos].getName())
+    if newPos == 13:
+        print("This is a SPECIAL tile - you miss your next turn.")
+        currentPlayer.skipTurn = True
+        return
+    else:
         checkAnimal(currentPlayer)
-    return position
-  
-# complete this function based upon the exam question you completed, you may need to alter the function name and paramters. 
 
-# WHAT OTHER FUNCTIONS ARE NEEDED? 
-
-# what happens if you land on an occupied square
-    # buy animal
-    # get fined
-
-# when is it your go? how might we track this? think queue again
-
-# when is the game over? do we even know? 
-
-    
-####################################################################################
-# menu system for the game itself
-####################################################################################
-
-'''
-This wont work and likely doesnt have everything that we want. 
-It shows how a menu can be made, it will need to be adapted for the game we are creating. 
-'''
-
-def output_board(theBoard):
-    for i in range(len(board)):
-        print(str(i)+" "+str(theBoard[i].getName()))
-    print("===============")
+#
 
 def show_menu():
     print("\n=== Zoo Game Menu ===")
     print("1. View animals")
     print("2. Buy animal")
     print("3. Upgrade animal")
-    print("4. End turn") 
-    print("5. Veiw board")
-    print("6. Quit Game")
+    print("4. Roll the Dice")
+    print("5. End turn")
+    print("6. Quit game")
 
+#
 
-def menu_choice(choice):
+def menu_choice(choice, currentPlayer):
     match choice:
         case "1":
             print("You chose to view animals")
-            # view animals code here
-
+            viewAllAnimals(board)
         case "2":
             print("You chose to buy an animal")
-            # buy animal code here
-
+            space = board[currentPlayer.getPosition()]
+            if space.getOwned() == "free":
+                purchase(currentPlayer, space)
+            else:
+                print("You cannot buy this animal.")
         case "3":
             print("You chose to upgrade an animal")
-            # upgrade animal code here
+            space = board[currentPlayer.getPosition()]
+            if space.getOwned() == currentPlayer:
+                if space.getCurrentLevel() < 3:
+                    space.upgrade()
+                    print(space.getName(), "upgraded to level", space.getCurrentLevel())
+                else:
+                    print("This animal is already at max level.")
+            else: 
+                print("You do not own this animal")
 
         case "4":
-            print("Turn ended")
-            # end turn code here
+            print("Rolling...")
+            playerMove(currentPlayer)
 
         case "5":
-            return output_board(board)
-            
+            print("Ending turn")
+            return "end"
+
         case "6":
             print("Game quitting...")
-            return False
+            return "quit"
 
         case _:
             print("Invalid choice, try again")
 
-    return True
+    return "continue"
 
+############
+############
 
-# Main menu loop
 running = True
+currentPlayerIndex = 0
+
 while running:
+    currentPlayer = players[currentPlayerIndex]
+
+    if currentPlayer.skipTurn: 
+            print(currentPlayer.playerID, "misses this turn!") 
+            currentPlayer.skipTurn = False 
+            currentPlayerIndex = (currentPlayerIndex + 1) % len(players) 
+            continue
+
+
+    print(currentPlayer.playerID + "'s turn")       
+    
     show_menu()
-    print("===============")
-    print("               ")
     choice = input("Enter your choice: ")
-    print("               ")
-    print("===============")
-    checkanimal(currentPlayer)
-    running = menu_choice(choice)
+
+    result = menu_choice(choice, currentPlayer)
+
+    if result == "quit":
+        running = False
+
+    elif result == "end":
+        currentPlayerIndex = (currentPlayerIndex + 1) % len(players)
