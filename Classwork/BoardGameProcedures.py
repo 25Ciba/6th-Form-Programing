@@ -82,10 +82,89 @@ class Card():
 ################
 ################
 ################
+import random 
 
-def create_players():                                                      1
+board = [None]*26 
+board[0] = Animal("-START-", None, None, None, None, None, None, None, None)
+board[1] = Animal("mouse", 600, 5, 25, 50, 100, "mouse.bmp", 1, "free")
+board[2] = Animal("rabbit", 800, 8, 40, 80, 160, "rabbit.bmp", 2, "free")
+board[3] = Animal("hedgehog", 900, 9, 45, 90, 180, "hedgehog.bmp", 3, "free")
+board[4] = Animal("fox", 1200, 12, 60, 120, 240, "fox.bmp", 4, "free")
+board[5] = Animal("badger", 1400, 14, 70, 140, 280, "badger.bmp", 5, "free")
+board[6] = Animal("squirrel", 1000, 10, 50, 100, 500, "squirrel.bmp", 6, "free")
+board[7] = Animal("owl", 1600, 16, 80, 160, 320, "owl.bmp", 7, "free")
+board[8] = Animal("deer", 1800, 18, 90, 180, 360, "deer.bmp", 8, "free")
+board[9] = Animal("boar", 2000, 20, 100, 200, 400, "boar.bmp", 9, "free")
+board[10] = Animal("wolf", 2200, 22, 110, 220, 440, "wolf.bmp", 10, "free")
+board[11] = Animal("lynx", 2400, 24, 120, 240, 480, "lynx.bmp", 11, "free")
+board[12] = Animal("bear", 2600, 26, 130, 260, 520, "bear.bmp", 12, "free")
+board[13] = Animal("-SPECIAL-", None, None, None, None, None, None, None, None)
+board[14] = Animal("penguin", 1800, 18, 90, 180, 360, "penguin.bmp", 14, "free")
+board[15] = Animal("seal", 2000, 20, 100, 200, 400, "seal.bmp", 15, "free")
+board[16] = Animal("dolphin", 2400, 24, 120, 240, 480, "dolphin.bmp", 16, "free")
+board[17] = Animal("shark", 2800, 28, 140, 280, 560, "shark.bmp", 17, "free")
+board[18] = Animal("tiger", 3000, 30, 150, 300, 600, "tiger.bmp", 18, "free")
+board[19] = Animal("elephant", 3500, 35, 175, 350, 700, "elephant.bmp", 19, "free")
+board[20] = Animal("zebra", 2800, 28, 140, 280, 560, "zebra.bmp", 20, "free")
+board[21] = Animal("giraffe", 3000, 30, 150, 300, 600, "giraffe.bmp", 21, "free")
+board[22] = Animal("rhino", 3200, 32, 160, 320, 640, "rhino.bmp", 22, "free")
+board[23] = Animal("hippo", 3400, 34, 170, 340, 680, "hippo.bmp", 23, "free")
+board[24] = Animal("lion", 3600, 36, 180, 360, 720, "lion.bmp", 24, "free")
+board[25] = Animal("gorilla", 3800, 38, 190, 380, 760, "gorilla.bmp", 25, "free")
+
+# setup the deck - this assumes they are always in this order, in we might shuffle - randomise. 
+deck = [
+    Card("WIN: You have won the zoo lottery", 1000000),
+    Card("FINE: You are double parked while visiting the zoo", -200),
+    Card("WIN: Your panda enclosure is a huge success", 500),
+    Card("FINE: You must pay for emergency vet treatment", -400),
+    Card("WIN: A famous wildlife photographer features your zoo", 300),
+    Card("FINE: You forgot to lock the reptile house", -250),
+    Card("WIN: School trip bookings increase profits", 350),
+    Card("FINE: You must repair damaged fencing", -300),
+    Card("WIN: Your zoo café has record sales", 200),
+    Card("FINE: Health and safety inspection fine", -350),
+    Card("WIN: A rare animal is donated to your zoo", 600),
+    Card("FINE: Food supplies spoiled due to power cut", -200),
+    Card("WIN: You receive a conservation grant", 500),
+    Card("FINE: Animal escape causes bad publicity", -450),
+    Card("WIN: Your zoo wins 'Best Family Attraction'", 400),
+    Card("FINE: You must refund unhappy visitors", -150),
+    Card("WIN: Sponsorship deal with wildlife charity", 700),
+    Card("FINE: Extra staff wages during busy weekend", -250),
+    Card("WIN: TV documentary filmed at your zoo", 800),
+    Card("FINE: Unexpected enclosure maintenance", -300),
+    Card("WIN: Successful breeding programme", 650),
+    Card("FINE: Vet bills higher than expected", -350),
+    Card("WIN: You host a sold-out night safari", 450),
+    Card("FINE: Storm damage to outdoor enclosures", -500),
+    Card("WIN: Gift shop profits exceed expectations", 250),
+    Card("FINE: You lose income due to bad weather", -200),
+    Card("WIN: Social media campaign boosts visitors", 300),
+    Card("FINE: Animal food costs increase", -150),
+    Card("WIN: You receive a donation from a benefactor", 1000),
+    Card("FINE: You must upgrade security systems", -400),
+    Card("WIN: Zoo anniversary celebration brings crowds", 550),
+    Card("FINE: Cleaning costs after school holidays", -180),
+    Card("WIN: New attraction opens successfully", 600),
+    Card("FINE: Marketing campaign fails", -220),
+    Card("WIN: Volunteers help reduce running costs", 200),
+    Card("FINE: Parking fines from delivery vehicles", -120),
+    Card("WIN: Endangered species funding approved", 750),
+    Card("FINE: Insurance excess payment required", -300)
+]
+
+############
+############
+############
+############
+############
+############
+
+
+def create_players():                                                      
     num = int(input("How many players? (2-4): "))
-    while 2 <= num <= 4:
+    while 2 < num > 4:
         print("Please enter 2, 3, or 4.")
         num = int(input("How many players? (2-4): "))
 
@@ -97,24 +176,16 @@ def create_players():                                                      1
 
 players = create_players()
 
+def purchase(currentPlayer, animal):
+    balance = player.getMoney()
+    costOfBuying = animal.getCost()
 
-current_turn = 0
-skip_next = set(currentPlayer)
-
-while True:
-    currentPlayer = players[current_turn]
-    if currentPlayer in skip_next:
-        skip_next.remove(currentPlayer)
-
+    if balance >= costOfBuying:
+        player.setMOney(balance - costOfBuying)
+        animal.setOwned(player)
+        print("You now own this animal!")
     else:
-        if currentPlayer.getPosition() == 13:
-        skip_next.add(currentPlayer)
-    current_turn = (current_turn + 1) % len(players)
-
-
-
-
-
+        print("You dont have enough to purchase this animal")
 
 def pickDeck(currentPlayer):
     
@@ -126,15 +197,24 @@ def pickDeck(currentPlayer):
     if headPointer == len(deck):
         headPointer = 0
 
+def MissAGO(currentPlayer):
+    missAGo = set(currentPlayer)
+    if currentPlayer in missAGo:
+        missAGo.remove(currentPlayer)
+    else:
+        if currentPlayer.getPosition() == 13:
+            missAGo.add(currentPlayer)
+    current_turn = (current_turn + 1) % len(players)
 
-def checkanimal(curentPlayer):
+
+def checkAnimal(currentPlayer):
     animal = board[currentPlayer].getboardPosition()
     if animal.getOwned == 'free':
         print("Would you like to buy a" + str(animal.getName()) + "for " + str(animal.getCost) + "?")
         input("Please Type: 'yes' or 'no':")
 
 
-def playerMove(currentPlayer):                                          2
+def playerMove(currentPlayer):                                          
     dice1 = random.randint(1, 6)
     dice2 = random.randint(1, 6)
     position = currentPlayer.getPosition()+ dice1 + dice2
@@ -144,7 +224,7 @@ def playerMove(currentPlayer):                                          2
         currentPlayer.setMoney(currentPlayer.getMoney()) + 500
         position = position - 26
     if position == 13:
-        missAGo(currentPlayer)
+        MissAGO(currentPlayer)
     elif position != 0:
         checkAnimal(currentPlayer)
     return position
@@ -168,36 +248,31 @@ def output_board(theBoard):
 
 def show_menu():
     print("\n=== Zoo Game Menu ===")
-    print("1. View animals")
-    print("2. Buy animal")
-    print("3. Upgrade animal")
+    print("1. Buy animal")
+    print("2. Upgrade animal")
+    print("3. Veiw board")
     print("4. End turn")
-    print("5. Veiw board")
-    print("6. Quit Game")
+    print("5. Quit Game")
 
 
-def menu_choice(choice):                             3
+def menu_choice(choice):                             
     match choice:
         case "1":
-            print("You chose to view animals")
-            # view animals code here
-
-        case "2":
             print("You chose to buy an animal")
             # buy animal code here
 
-        case "3":
+        case "2":
             print("You chose to upgrade an animal")
             # upgrade animal code here
 
+        case "3":
+            return output_board(board)
+        
         case "4":
             print("Turn ended")
-            # end turn code here
-
-        case "5":
-            return output_board(board)
+            current_turn = (current_turn + 1) % len(players)
             
-        case "6":
+        case "5":
             print("Game quitting...")
             return False
 
@@ -208,15 +283,16 @@ def menu_choice(choice):                             3
 
 
 # Main menu loop
+current_turn = 0
+currentPlayer = players[current_turn]
 running = True
 while running:
     show_menu()
     print("===============")
-    print("               ")S
+    print("               ")
     choice = input("Enter your choice: ")
     print("               ")
     print("===============")
-    checkanimal(currentPlayer)
     running = menu_choice(choice)
 
 

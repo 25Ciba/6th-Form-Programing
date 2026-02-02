@@ -118,7 +118,7 @@ board[25] = Animal("gorilla", 3800, 38, 190, 380, 760, "gorilla.bmp", 25, "free"
 
 def create_players():
     num = int(input("How many players? (2-4): "))
-    while 2 <= num <= 4:
+    while not(2 <= num <= 4):
         print("Please enter 2, 3, or 4.")
         num = int(input("How many players? (2-4): "))
 
@@ -194,7 +194,7 @@ def pickDeck(currentPlayer):
     #if position = 
         
 
-def checkanimal(curentPlayer):
+def checkanimal(currentPlayer):
     animal = board[currentPlayer].getboardPosition()
     if animal.getOwned == 'free':
         print("Would you like to buy a" + str(animal.getName()) + "for " + str(animal.getCost) + "?")
